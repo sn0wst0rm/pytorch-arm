@@ -27,7 +27,7 @@ jobs:
   build_stage1:
     if: true
     name: 'build pytorch within docker (stage1)'
-    runs-on: self-hosted
+    runs-on: ubuntu-stable
     concurrency:
       group: pytorch-${{ matrix.platform }}-${{ matrix.pythonlabel }}-stage1
       cancel-in-progress: true
@@ -95,7 +95,7 @@ jobs:
     if: true
     name: 'build pytorch within docker (stage2)'
     needs: [ build_stage1 ]
-    runs-on: self-hosted
+    runs-on: ubuntu-stable
     concurrency:
       group: pytorch-${{ matrix.platform }}-${{ matrix.pythonlabel }}-stage2
       cancel-in-progress: true
@@ -162,7 +162,7 @@ jobs:
     if: true
     name: 'build pytorch within docker (stage3)'
     needs: [ build_stage2 ]
-    runs-on: self-hosted
+    runs-on: ubuntu-stable
     concurrency:
       group: pytorch-${{ matrix.platform }}-${{ matrix.pythonlabel }}-stage3
       cancel-in-progress: true
@@ -229,7 +229,7 @@ jobs:
     if: true
     name: 'build pytorch within docker (stage4)'
     needs: [ build_stage3 ]
-    runs-on: self-hosted
+    runs-on: ubuntu-stable
     concurrency:
       group: pytorch-${{ matrix.platform }}-${{ matrix.pythonlabel }}-stage4
       cancel-in-progress: true
@@ -296,7 +296,7 @@ jobs:
     if: true
     name: 'build pytorch within docker (stage5)'
     needs: [ build_stage4 ]
-    runs-on: self-hosted
+    runs-on: ubuntu-stable
     concurrency:
       group: pytorch-${{ matrix.platform }}-${{ matrix.pythonlabel }}-stage5
       cancel-in-progress: true
@@ -363,7 +363,7 @@ jobs:
     if: true
     name: 'build pytorch within docker (stage6)'
     needs: [ build_stage5 ]
-    runs-on: self-hosted
+    runs-on: ubuntu-stable
     concurrency:
       group: pytorch-${{ matrix.platform }}-${{ matrix.pythonlabel }}-stage6
       cancel-in-progress: true
@@ -430,7 +430,7 @@ jobs:
     if: true
     name: 'build pytorch within docker (stage7)'
     needs: [ build_stage6 ]
-    runs-on: self-hosted
+    runs-on: ubuntu-stable
     concurrency:
       group: pytorch-${{ matrix.platform }}-${{ matrix.pythonlabel }}-stage7
       cancel-in-progress: true
