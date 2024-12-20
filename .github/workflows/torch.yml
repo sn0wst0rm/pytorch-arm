@@ -9,7 +9,7 @@ on:
 env:
 # torch version to build
 # keep in mind that `arm.patch` needs to work on this version (or recreate a new patch)
-  TORCHTAG: v1.13.0
+  TORCHTAG: v1.10.0
 
   REUSE_STAGE1: false
   REUSE_STAGE2: false
