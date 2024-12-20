@@ -8,7 +8,7 @@ env:
 # keep in mind that `arm.patch` needs to work on this version (or recreate a new patch)
   TORCHTAG: v1.13.0
 
-  REUSE_STAGE1: false
+  REUSE_STAGE1: true
   REUSE_STAGE2: false
   REUSE_STAGE3: false
   REUSE_STAGE4: false
