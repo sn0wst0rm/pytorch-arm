@@ -7,7 +7,7 @@ ARG NUMPY_VERSION===1.23
 ARG GITHUB_USER=sn0wst0rm
 ARG REPO_NAME=pytorch-arm
 LABEL maintainer="github.com/${GITHUB_USER}" name="torch-arm" description="torch building container" org.opencontainers.image.description="torch building container" nimversion="$NIM_VERSION" url="https://github.com/${GITHUB_USER}/${REPO_NAME}" vcs-url="https://github.com/${GITHUB_USER}/${REPO_NAME}" org.opencontainers.image.source="https://github.com/${GITHUB_USER}/${REPO_NAME}"
-ENV DEBIAN_FRONTEND=noninteractive TORCHTAG=${TORCHTAG} NUMPY_VERSION=${NUMPY_VERSION} GITHUB_USER=${GITHUB_USER} NO_CUDA=1 USE_MKLDNN=0 USE_NCCL=0 BUILD_TEST=0 USE_ZSTD=1 USE_NUMPY=1 USE_SYSTEM_NCCL=0 USE_ZMQ=0 USE_REDIS=0 USE_TBB=1 USE_FFTW=0 USE_GFLAGS=0 USE_GLOG=0 USE_LMDB=0 USE_NUMA=0 USE_MPI=0 BUILD_ONNX_PYTHON=1
+ENV DEBIAN_FRONTEND=noninteractive TORCHTAG=${TORCHTAG} NUMPY_VERSION=${NUMPY_VERSION} GITHUB_USER=${GITHUB_USER} NO_CUDA=1 USE_MKLDNN=0 USE_NCCL=0 BUILD_TEST=0 USE_ZSTD=1 USE_NUMPY=1 USE_SYSTEM_NCCL=0 USE_ZMQ=0 USE_REDIS=0 USE_TBB=1 USE_FFTW=0 USE_GFLAGS=0 USE_GLOG=0 USE_LMDB=0 USE_NUMA=0 USE_MPI=0 BUILD_ONNX_PYTHON=1 TORCHVISION=v0.14.0
 WORKDIR /src/torch
 RUN apt-get update && apt-get install -y \
   automake autoconf libpng-dev nano \
