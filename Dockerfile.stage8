@@ -12,14 +12,10 @@ RUN \
   git clone -b ${TORCHVISION} https://github.com/pytorch/vision.git && \
   cd vision && \
   git submodule update --init --recursive && \
-  ls && \
-  ls -lah .. && \
-  ls -lah ../.. && \
-  find / | grep ".whl" && \
-  ls -lah ../pytorch/dist/ && \
-  pip install ../pytorch/dist/*.whl && \
+  ls -lah /src/torch/pytorch/dist/ && \
+  pip install /src/torch/pytorch/dist/*.whl && \
   python setup.py build && \
   python setup.py bdist_wheel && \
   python setup.py install
 
-ENTRYPOINT [ "/bin/bash", "cp", "--archive", "/src/torch", "/out" ]
+ENTRYPOINT [ "/bin/bash", "cp", "--archive", "/src/vision", "/out" ]
