@@ -2,6 +2,12 @@ name: torch arm build
 
 on:
   workflow_dispatch:
+    inputs:
+      do_stage_7:
+          description: "Run stage 7 again?"
+          default: false
+          required: true
+          type: boolean
 
 env:
 # torch version to build
@@ -26,7 +32,7 @@ concurrency:
 
 jobs:
   build_stage7:
-    if: true
+    if: ${{ inputs.do_stage_7 }}
     name: 'build pytorch within docker (stage7)'
     runs-on: ubuntu-latest
     concurrency:
