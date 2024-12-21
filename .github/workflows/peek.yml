@@ -1,0 +1,113 @@
+name: torch arm build
+
+on:
+  workflow_dispatch:
+    inputs:
+      do_stage_7:
+          description: "Run stage 7 again?"
+          default: false
+          required: true
+          type: boolean
+
+env:
+# torch version to build
+# keep in mind that `arm.patch` needs to work on this version (or recreate a new patch)
+  TORCHTAG: v1.13.0
+  TORCHVISION: v0.14.0
+  MAKEFLAGS: -j$(nproc)
+  REUSE_STAGE1: true
+  REUSE_STAGE2: true
+  REUSE_STAGE3: true
+  REUSE_STAGE4: true
+  REUSE_STAGE5: true
+  REUSE_STAGE6: true
+  REUSE_STAGE7: false
+  DOCKER_CACHE_ID: 3
+
+  FULL_ARTIFACT: false
+
+concurrency:
+  group: pytorch-arm-build
+  cancel-in-progress: true
+
+jobs:
+  peek_stage8:
+    if: true
+    name: 'build pytorch within docker (stage8)'
+    runs-on: ubuntu-latest
+    concurrency:
+      group: pytorch-${{ matrix.platform }}-${{ matrix.pythonlabel }}-stage8
+      cancel-in-progress: true
+    strategy:
+      max-parallel: 6
+      fail-fast: false
+      matrix:
+        platform: [ linux/arm/v7 ]
+        pythonlabel: [ 3.10-buster ]
+
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          submodules: 'recursive'
+
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v1
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v1
+
+      - name: Login into ghcr.io docker
+        run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.repository_owner }} --password-stdin
+
+      - name: Verbose info
+        run: |
+              docker buildx du --verbose || :
+              docker system df -v --format '{{ .BuildCache | json }}' || :
+              echo '${{ github.run_id }}${{ github.run_number }}${{ github.run_attempt }}'
+
+      - name: setup env vars
+        run: |
+              import os
+              
+              env_file = os.getenv('GITHUB_ENV')
+              with open(env_file, "a") as ef:
+                print('TAGNAME=' + '${{ matrix.platform }}_${{ matrix.pythonlabel }}_${{ env.TORCHTAG }}'.replace('/', '_').replace(' ', '_').replace('-', '_'), file=ef)
+                print('ARTIFACT_NAME=' + '${{ matrix.platform }}_${{ matrix.pythonlabel }}_${{ env.TORCHTAG }}'.replace('/', '_').replace(' ', '_').replace('-', '_'), file=ef)
+        shell: python
+
+      - name: Cache docker
+        uses: satackey/action-docker-layer-caching@v0.0.11
+        continue-on-error: true
+        with:
+          key: ${{ runner.os }}-build-${{ env.TORCHTAG }}-${{ env.DOCKER_CACHE_ID }}-${{ matrix.platform }}-${{ matrix.pythonlabel }}-${{ hashFiles('**/Dockerfile.*') }}-${{ env.TAGNAME }}-stage8_peek
+          restore-keys: |
+            ${{ runner.os }}-build-${{ env.TORCHTAG }}-${{ env.DOCKER_CACHE_ID }}-${{ matrix.platform }}-${{ matrix.pythonlabel }}
+
+      - name: Stage8 - Build using Dockerfile
+        run: |
+          docker buildx build --platform=${{ matrix.platform }} --output "type=image,push=true" --build-arg pythonlabel=${{ matrix.pythonlabel }} --build-arg GITHUB_USER=${{ github.repository_owner }} --build-arg TORCHTAG=${{ env.TORCHTAG }} --build-arg FROMPLATFORM=${{ matrix.platform }} --build-arg FROMIMAGE=ghcr.io/${{ github.repository_owner }}/pytorch-arm/stage8:${{ env.TAGNAME }} --tag ghcr.io/${{ github.repository_owner }}/pytorch-arm/stage8_peek:${{ env.TAGNAME }} --file ./Dockerfile.stage8 .
+
+      - run: |
+            set -euo pipefail
+            docker create -ti --platform ${{ matrix.platform }} --name dummy ghcr.io/${{ github.repository_owner }}/pytorch-arm/stage8:${{ env.TAGNAME }} sh
+            mkdir -p build_result
+            docker cp -a dummy:/src/vision/. build_result
+            ls -lah build_result
+
+      - name: Create artifact
+        uses: actions/upload-artifact@v3
+        if: env.FULL_ARTIFACT == 'true'
+        continue-on-error: true
+        with:
+          name: ${{ env.ARTIFACT_NAME }}
+          path: build_result
+          retention-days: 5
+      
+      - name: Create artifact wheels
+        uses: actions/upload-artifact@v3
+
+        with:
+          name: ${{ env.ARTIFACT_NAME }}_dist
+          path: |
+            build_result/dist
+            build_result/wheels
