@@ -108,6 +108,7 @@ jobs:
             
   build_stage8:
     if: true
+    needs: [ build_stage7 ]
     name: 'build pytorch within docker (stage8)'
     runs-on: ubuntu-latest
     concurrency:
