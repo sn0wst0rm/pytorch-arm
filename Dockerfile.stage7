@@ -19,14 +19,18 @@ RUN \
   ls -lah && \
   cd ../../.. && \
   python setup.py bdist_wheel && \
-  python setup.py install && \
+  python setup.py install
+
+RUN \
+  ls && \
   cd .. && \
   git clone -b ${TORCHVISION} https://github.com/pytorch/vision.git && \
   cd vision && \
   git submodule update --init --recursive \
   pip install /pytorch/dist/*.whl && \
   python setup.py build && \
-  python setup.py bdist_wheel
+  python setup.py bdist_wheel && \
+  python setup.py install
 
 
 ENTRYPOINT [ "/bin/bash", "cp", "--archive", "/src/torch", "/out" ]
