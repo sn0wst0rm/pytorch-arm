@@ -12,6 +12,8 @@ RUN \
   git clone -b ${TORCHVISION} https://github.com/pytorch/vision.git && \
   cd vision && \
   git submodule update --init --recursive && \
+  ls && \
+  ls -lah ../pytorch/dist/ && \
   pip install ../pytorch/dist/*.whl && \
   python setup.py build && \
   python setup.py bdist_wheel && \
