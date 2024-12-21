@@ -18,7 +18,7 @@ env:
   REUSE_STAGE7: false
   DOCKER_CACHE_ID: 3
 
-  FULL_ARTIFACT: true
+  FULL_ARTIFACT: false
 
 concurrency:
   group: pytorch-arm-build
