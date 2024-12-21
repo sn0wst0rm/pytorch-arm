@@ -13,6 +13,9 @@ RUN \
   cd vision && \
   git submodule update --init --recursive && \
   ls && \
+  ls -lah .. && \
+  ls -lah ../.. && \
+  find / | grep ".whl" && \
   ls -lah ../pytorch/dist/ && \
   pip install ../pytorch/dist/*.whl && \
   python setup.py build && \
