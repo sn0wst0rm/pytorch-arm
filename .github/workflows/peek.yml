@@ -74,15 +74,7 @@ jobs:
                 print('TAGNAME=' + '${{ matrix.platform }}_${{ matrix.pythonlabel }}_${{ env.TORCHTAG }}'.replace('/', '_').replace(' ', '_').replace('-', '_'), file=ef)
                 print('ARTIFACT_NAME=' + '${{ matrix.platform }}_${{ matrix.pythonlabel }}_${{ env.TORCHTAG }}'.replace('/', '_').replace(' ', '_').replace('-', '_'), file=ef)
         shell: python
-
-      - name: Cache docker
-        uses: satackey/action-docker-layer-caching@v0.0.11
-        continue-on-error: true
-        with:
-          key: ${{ runner.os }}-build-${{ env.TORCHTAG }}-${{ env.DOCKER_CACHE_ID }}-${{ matrix.platform }}-${{ matrix.pythonlabel }}-${{ hashFiles('**/Dockerfile.*') }}-${{ env.TAGNAME }}-stage8_peek
-          restore-keys: |
-            ${{ runner.os }}-build-${{ env.TORCHTAG }}-${{ env.DOCKER_CACHE_ID }}-${{ matrix.platform }}-${{ matrix.pythonlabel }}
-      
+        
       - run: |
             set -euo pipefail
             docker create -ti --platform ${{ matrix.platform }} --name dummy ghcr.io/${{ github.repository_owner }}/pytorch-arm/stage8:${{ env.TAGNAME }} sh
